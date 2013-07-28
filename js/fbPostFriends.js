@@ -24,6 +24,7 @@ angular.module('myApp.services')
             postData.message = posts[i].message;
             postData.url = posts[i].url;
           }
+            console.log(postData);
           var postResponseCallback = function(currPost,name) {
             return function(response) {
               if (!response || response.error) {

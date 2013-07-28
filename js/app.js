@@ -20,7 +20,7 @@ angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives', 
    // $window.fbAsyncInit = function() {
       // Executed when the SDK is loaded
       FB.init({ 
-        appId: '597289980321390', 
+        appId: '483625751727439', 
         channelUrl: '/channel.html', 
         status: true, 
         cookie: true, 

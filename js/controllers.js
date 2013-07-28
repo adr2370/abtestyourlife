@@ -8,6 +8,7 @@ angular.module('myApp.controllers', []).
   })
   .controller('dashCtrl', function($scope, $rootScope, fbGetInformation, fBase, fbPickWinner) {
     $scope.orderType = 'date';
+    $scope.hasExperiments = false;
     
     $rootScope.$watch('user', function() {
       if ($rootScope.user && $rootScope.user.id) {
@@ -20,6 +21,7 @@ angular.module('myApp.controllers', []).
     
     $scope.pickWinner = function(experiment,winner) {
       fbPickWinner.pickWinner(experiment,winner);
+      delete $scope.experiments[experiment];
     };
     
     $scope.refresh = function() {
@@ -27,11 +29,14 @@ angular.module('myApp.controllers', []).
         fBaseRef.on('child_added', function(snapshot) {
           fbGetInformation.getExperimentInformation(snapshot.val())
             .then(function(data) {
+              console.log('data', data);
+              $scope.hasExperiments = true;
               var experiment = {};
               experiment['id'] = snapshot.name();
               experiment['name'] = data.name || 'Untitled Experiment';
               experiment['posts'] = data.result;
               experiment['shown'] = false;
+              experiment['timeCreated'] = data['timeCreated'];
               $scope.experiments[snapshot.name()] = experiment;
             });
         });
@@ -79,7 +84,7 @@ angular.module('myApp.controllers', []).
       {'value': ''}
     ];
     
-    $scope.type = '';
+    $scope.type = 'STATUS';
     $scope.posting = false;
     $scope.testGroupSize = 50;
     
@@ -167,7 +172,7 @@ angular.module('myApp.controllers', []).
         }        
       }
       
-      if ($scope.posting || postVals.length < 2) {
+      if ($scope.posting || postVals.length < 2 || !$scope.postName) {
         return false; 
       }
       

@@ -15,6 +15,9 @@ angular.module('myApp.filters', []).
 })
 .filter('timeago', function() {
   return function(input, p_allowFuture) {
+    if (input['timeCreated']) {
+      input = input['timeCreated'];
+    }
     var substitute = function (stringOrFunction, number, strings) {
       var string = $.isFunction(stringOrFunction) ? stringOrFunction(number, dateDifference) : stringOrFunction;
       var value = (strings.numbers && strings.numbers[number]) || number;

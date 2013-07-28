@@ -14,25 +14,27 @@
 
 <div id="dashboard" class="row">
   <div class="large-8 columns">
-    <div id="notests" ng-show="!experiments">
-      No tests.
+    <h1><span class="icon-terminal"></span>&nbsp;Your Experiments</h1>
+    <div id="notests" ng-hide="hasExperiments">
+      Oh no!  You have no experiments...
+      Create an experiment on the right to start <span style="font-family:'Helvetica Neue';font-weight: bold;">A|B</span> testing.
     </div>
-    <div id="tests" ng-show="experiments">
-      <h1><span class="icon-terminal"></span>&nbsp;Your Experiments</h1>
+    <div id="tests" ng-show="hasExperiments">
       <ul>
         <li ng-repeat="experiment in experiments">
           <div class="experiment">
             <p class="experiment-title">{{experiment.name}}</p>
-            <p><span class="icon-calendar"></span>&nbsp;<b>Created</b>: {{experiment.posts[0].updated_time | timeago}}</p>
-            <p><span class="icon-trophy"></span>&nbsp;<b>Current Winner</b>: {{experiment.posts[0].message}}</p>
+            <p><span class="icon-calendar"></span>&nbsp;<b>Created</b>: {{experiment | timeago}}</p>
+            <p><span class="icon-trophy"></span>&nbsp;<b>Current Winner</b>: {{experiment.posts[0].message || experiment.posts[0].name}}</p>
             <p class="details-drop" ng-click="experiment.shown = !experiment.shown"><span class="icon-list"></span>&nbsp;<b>Show/hide details</b></p>
             <div class="tests">
               <div class="test" ng-show="experiment.shown" ng-repeat="post in experiment.posts">
-                <h3>{{post.message}}</h3>
+                <h3><span class="icon-picture" ng-show="post.source">&nbsp;</span>{{post.message || post.name}}</h3>
+                <p ng-show="post.source"><img src="{{post.source}}"/></p>
                 <p><b>Shared with:</b> {{post.friendCount}} friends</p>
                 <p><span class="icon-thumbs-up"/>&nbsp;{{prettyPrintNoun(post.numLikes, 'like')}} | <span class="icon-comments-alt"/>&nbsp;{{prettyPrintNoun(post.numComments, 'comment')}} | <span class="icon-share"/>&nbsp;{{prettyPrintNoun(post.numShares, 'share')}}</p>         
-                <p class="test-title"><span class="icon-globe"></span>&nbsp;<a href="{{'https://www.facebook.com/' + me.id + '/posts/' + post.id}}">Go to post</a></p>
-                <p class="select-winner"><span class="icon-globe"></span>&nbsp;<a ng-click="pickWinner(experiment.id,post.id)">Pick as Winner</a></p>
+                <p class="test-title"><span class="icon-globe"></span>&nbsp;<a href="{{'https://www.facebook.com/' + me.id + '/posts/' + post.id}}" target="_blank">Go to post</a></p>
+                <p class="select-winner"><span class="icon-ok"></span>&nbsp;<a ng-click="pickWinner(experiment.id,post.id)">Pick as winner and distribute to all your friends</a></p>
                 <p ng-show="false && getLastUserWhoLiked(post)"><span class="icon-comments-alt"></span>&nbsp;<b>Recent activity</b>: <b><a href="{{'http://www.facebook.com/' + getLastUserWhoLiked(post).id}}">{{getLastUserWhoLiked(post).name}}</a></b> liked this option</p>
                 <p class="hide">{{post}}</p>
               </div>
@@ -45,11 +47,12 @@
   <div class="large-4 columns" id="add-experiment">
     <div ng-controller="createExperimentCtrl">
       <h2><span class="icon-plus"></span>&nbsp;Create New A|B Test</h2>
-      <dl class="sub-nav">
+      <dl class="sub-nav nohighlight">
         I want to make a...
-        <p><a ng-click="changeType('STATUS')"><b>Status</b></a> | <a ng-click="changeType('PHOTO')"><b>Photo</b></a></p>
+        <p><a ng-click="changeType('STATUS')"><b>Status</b></a> | 
+        <a ng-click="changeType('PHOTO')"><b>Photo</b></a></p>
       </dl>
-      <div ng-show="type != ''">
+      <div>
         <p>Give your experiment a <b>name</b>.</p>
         <input ng-model="postName" class="large" type="text" placeholder="Experiment Title"/>
         <div style="margin-bottom: 20px; text-align: center">

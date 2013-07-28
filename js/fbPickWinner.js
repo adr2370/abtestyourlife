@@ -16,7 +16,7 @@ angular.module('myApp.services')
             postID = data[numPosts].postID.split('_')[1];
           }
           if(postID == winner) {
-            var postResponse = function(postID) {
+            var postResponse = function(postID,postURL) {
               return function(response) {
                 if(type=='STATUS') {
                   FB.api('me/feed', 'POST', 
@@ -31,7 +31,7 @@ angular.module('myApp.services')
                 } else if(type=='PHOTO') {
                   FB.api('me/photos', 'POST',
                     {
-                      message: response.message+"\x07",
+                      message: response.name+"\x07",
                       url: response.source
                     }, function(response2) {
                       FB.api(postURL, 'DELETE', function(response3) {
@@ -42,7 +42,7 @@ angular.module('myApp.services')
                 }
               }
             }
-            FB.api(postID, 'GET', postResponse(postID));
+            FB.api(postID, 'GET', postResponse(postID,postURL));
           } else {
             FB.api(postURL, 'DELETE', function(response) {});
           }

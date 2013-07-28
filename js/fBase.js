@@ -56,7 +56,7 @@ angular.module('myApp.services')
       var user = rootRef.child('users').child(fbid);
       posts['type']=type;
       posts['testName']=name;
-      posts['timeCreated']=new Date().getTime();
+      posts['timeCreated']=Math.floor(new Date().getTime());
       user.child('experiments').push(posts, deferred.resolve);
       return deferred.promise;
     },
