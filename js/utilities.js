@@ -1,7 +1,9 @@
 angular.module('myApp.services')
 .service('util', function() {
   return {
-    split: function split(array, sections) {
+    split: function split(array, sections, percent) {
+      percent = percent || 1;
+      array = array.splice(0,array.length*percent);
       var buckets = [], size = Math.ceil(array.length/sections);
       while (array.length > 0) {
         buckets.push(array.splice(0, size));

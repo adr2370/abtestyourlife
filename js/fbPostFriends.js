@@ -1,7 +1,8 @@
 angular.module('myApp.services')
 .service('fbPostFriends', function($rootScope,$q,fBase,util) {
   return {
-    postToFriends: function postToFriends(posts, type) {
+    postToFriends: function postToFriends(name, posts, type, percent) {
+      percent = percent || 1;
       //var deferred = $q.defer();
       FB.api('/me/friends', function(response) {
         var friendIDs = [];
@@ -9,7 +10,7 @@ angular.module('myApp.services')
           friendIDs[i] = response.data[i].id;
         }
         friendIDs = util.shuffle(friendIDs);
-        var friends = util.split(friendIDs, posts.length);
+        var friends = util.split(friendIDs, posts.length, percent);
         var postsNotYetRecieved = posts.length;
         var postResponses = [];
         for(var i=0;i<posts.length;i++) {
@@ -23,10 +24,10 @@ angular.module('myApp.services')
             postData.message = posts[i].message;
             postData.url = posts[i].url;
           }
-          var postResponseCallback = function(currPost) {
+          var postResponseCallback = function(currPost,name) {
             return function(response) {
               if (!response || response.error) {
-                deferred.resolve(response.error);
+                console.log(response.error);
               } else {
                 postsNotYetRecieved--;
                 postResponses[currPost] = 
@@ -35,7 +36,7 @@ angular.module('myApp.services')
                     'friendList': friends[currPost]
                   };
                 if(postsNotYetRecieved == 0) {
-                  fBase.saveExperiment($rootScope.user.id,postResponses);
+                  fBase.saveExperiment($rootScope.user.id,postResponses,type,name);
                 }
               }
             }
@@ -44,7 +45,7 @@ angular.module('myApp.services')
             postURL, 
             'post', 
             postData,
-            postResponseCallback(i)
+            postResponseCallback(i,name)
           );
         }
       });

@@ -1,5 +1,67 @@
 /* app css stylesheet */
+.row.full-width {
+  width: 100%;
+  max-width: 100%;
+}
 
+/* full width html */
+html, body, #main-view { height: 100%; }
+
+/* splash */
+#splash {
+  height: 100%;
+  width: 100%;
+  background: url(/img/wedding_bw.jpg) no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  display: table; position: static;
+}
+
+#banner {
+  display: table-cell; vertical-align: middle; width: 100%; position: static;
+
+  font-family: 'league-gothic';
+  color: #EFEFEF;
+}
+
+#banner-inner {
+  background-color: rgba(100, 100, 100, 0.5);
+  text-align: center;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+#banner h1 {
+  font-size: 50pt;
+  color: #EFEFEF;
+  margin-bottom: -5px;
+}
+
+#banner h2 {
+  font-size: 24pt;
+  color: #EFEFEF;
+}
+
+#banner a {
+  font-family: "Helvetica";
+}
+
+/* dashboard */
+ul {
+  list-style-type: none;
+}
+
+#dashboard h1 {
+  font-family: 'league-gothic';
+  font-size: 36pt;
+}
+
+.experiment {
+  padding: 10px;
+}
+/* menu */
 .menu {
   list-style: none;
   border-bottom: 0.1em solid black;
@@ -27,4 +89,14 @@
 .menu > li:nth-child(1):before {
   content: "";
   padding: 0;
+}
+
+.hide {
+  visibility: hidden; 
+}
+
+/* font faces */
+@font-face {
+  font-family: 'league-gothic';
+  src: url('/css/fonts/leaguegothic-regular-webfont.ttf') format('truetype');
 }

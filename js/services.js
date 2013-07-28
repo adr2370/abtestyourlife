@@ -6,31 +6,44 @@ angular.module('myApp.services', []);
 
 // Facebook SDK
 angular.module('facebook', [])
-.service('srvAuth', function($rootScope, $location) {
+.service('srvAuth', function($rootScope, $location, $q) {
   return {
     watchAuthenticationStatusChange: function() {
       var _self = this;
-    
-      FB.Event.subscribe('auth.authResponseChange', function(response) {
+      $rootScope.isUserLoggedIn = false;
+      
+      var checkLoginStatus = function(response) {
         if (response.status === 'connected') {
-          $location.path('/dashboard');
-          _self.getUserInfo();
-    
-          /*
-           This is also the point where you should create a 
-           session for the current user.
-           For this purpose you can use the data inside the 
-           response.authResponse object.
-          */
+          $rootScope.$apply(function(){
+            $location.path('/dashboard');
+            $rootScope.isUserLoggedIn = true;
+            _self.getUserInfo();
+          });
         } 
         else {
-          $location.path('/');
-          /*
-           The user is not logged to the app, or into Facebook:
-           destroy the session on the server.
-          */
+          $rootScope.$apply(function(){
+            $location.path('/');
+          });
         }
+      };
+      
+      FB.getLoginStatus(function(response) {
+        checkLoginStatus(response);
+      });
+    
+      FB.Event.subscribe('auth.authResponseChange', function(response) {
+        checkLoginStatus(response);
       })
+    },
+    didGrantPermissions: function() {
+      var _self = this;
+      var deferred = $q.defer();
+      FB.api('/me/permissions', function(response) {
+        $rootScope.$apply(function() {
+          deferred.resolve(response.data.publish_actions==true);
+        });
+      });
+      return deferred.promise;
     },
     getUserInfo: function() {
       var _self = this;

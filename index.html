@@ -14,18 +14,9 @@
 </head>
 <body>
   <div id="fb-root"></div>
-
-  <nav class="top-bar">
-    <ul class="title-area">
-      <li class="name">
-        <h1>
-          <a href="#">AB Test </a>
-        </h1>
-      </li>
-    </ul>
-  </nav>
+  
   <!-- Partials get input here -->
-  <div ng-view></div>
+  <div id="main-view" ng-view></div>
 
   <!-- In production use:
   <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
@@ -36,6 +27,7 @@
   <script src="js/fBase.js"></script> <!-- Don't fucking delete this line - Waseem --> 
   <script src="js/fbPostFriends.js"></script>
   <script src="js/fbGetInformation.js"></script>
+  <script src="js/fbPickWinner.js"></script>
   <script src="js/utilities.js"></script>
   <script src="js/controllers.js"></script>
   <script src="js/filters.js"></script>
