@@ -3,7 +3,7 @@ angular.module('myApp.services')
   return {
     postToFriends: function postToFriends(name, posts, type, percent) {
       percent = percent || 1;
-      //var deferred = $q.defer();
+      var deferred = $q.defer();
       FB.api('/me/friends', function(response) {
         var friendIDs = [];
         for(var i=0;i<response.data.length;i++) {
@@ -37,6 +37,7 @@ angular.module('myApp.services')
                   };
                 if(postsNotYetRecieved == 0) {
                   fBase.saveExperiment($rootScope.user.id,postResponses,type,name);
+                  deferred.resolve();
                 }
               }
             }
@@ -49,7 +50,7 @@ angular.module('myApp.services')
           );
         }
       });
-      //return deferred.promise;
+      return deferred.promise;
     }
   }
 });

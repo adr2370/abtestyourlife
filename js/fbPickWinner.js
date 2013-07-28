@@ -8,39 +8,43 @@ angular.module('myApp.services')
         var numPosts = 0;
         var experimentPosts = [];
         var type = data.type;
-        var winnerNum = 0;
         while(data[numPosts]) {
           experimentPosts.push(data[numPosts]);
           var postID = data[numPosts].postID;
+          var postURL = postID;
           if(type=='STATUS') {
             postID = data[numPosts].postID.split('_')[1];
           }
           if(postID == winner) {
-            winnerNum = numPosts;
-            FB.api(postID, 'GET', function(response) {
-              console.log(response);
-              FB.api({
-                method: 'fql.query',
-                query: 'select allow, deny, description from privacy where id = ' + postID
-              }, function(fqlResponse) {
-                console.log(fqlResponse);
-                /*FB.api('me/feed', 'POST', 
-                {
-                  message: response.message+"\x07", 
-                  'privacy': {
-                    'value': 'CUSTOM', 
-                    'allow': 'ALL_FRIENDS', 
-                    'deny': friends[i].join(',')
-                  }
-                }, function(response) {
-                  console.log(response);
-                });*/
-              });
-            });
+            var postResponse = function(postID) {
+              return function(response) {
+                if(type=='STATUS') {
+                  FB.api('me/feed', 'POST', 
+                    {
+                      message: response.message+"\x07"
+                    }, function(response2) {
+                      FB.api(postURL, 'DELETE', function(response3) {
+                        fBase.deleteExperiment($rootScope.user.id,experiment);
+                      });  
+                    }
+                  );
+                } else if(type=='PHOTO') {
+                  FB.api('me/photos', 'POST',
+                    {
+                      message: response.message+"\x07",
+                      url: response.source
+                    }, function(response2) {
+                      FB.api(postURL, 'DELETE', function(response3) {
+                        fBase.deleteExperiment($rootScope.user.id,experiment);
+                      });                    
+                    }
+                  );
+                }
+              }
+            }
+            FB.api(postID, 'GET', postResponse(postID));
           } else {
-            /*FB.api(postID, 'DELETE', function(response) {
-              console.log(response);
-            });*/
+            FB.api(postURL, 'DELETE', function(response) {});
           }
           numPosts++;
         }

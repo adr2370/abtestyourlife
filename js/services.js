@@ -7,6 +7,16 @@ angular.module('myApp.services', []);
 // Facebook SDK
 angular.module('facebook', [])
 .service('srvAuth', function($rootScope, $location, $q) {
+  var didGrantPermissions = function() {
+    var _self = this;
+    var deferred = $q.defer();
+    FB.api('/me/permissions', function(response) {
+      $rootScope.$apply(function() {
+        deferred.resolve(response.data[0].publish_actions&&response.data[0].read_friendlists);
+      });
+    });
+    return deferred.promise;
+  }
   return {
     watchAuthenticationStatusChange: function() {
       var _self = this;
@@ -14,10 +24,15 @@ angular.module('facebook', [])
       
       var checkLoginStatus = function(response) {
         if (response.status === 'connected') {
-          $rootScope.$apply(function(){
-            $location.path('/dashboard');
-            $rootScope.isUserLoggedIn = true;
-            _self.getUserInfo();
+          didGrantPermissions().then(function(result) {
+            if(!result) {
+              alert('Proper persmissions have not been granted.');
+              FB.logout();
+            } else {
+              $location.path('/dashboard');
+              $rootScope.isUserLoggedIn = true;
+              _self.getUserInfo();
+            }
           });
         } 
         else {
@@ -35,23 +50,20 @@ angular.module('facebook', [])
         checkLoginStatus(response);
       })
     },
-    didGrantPermissions: function() {
-      var _self = this;
-      var deferred = $q.defer();
-      FB.api('/me/permissions', function(response) {
-        $rootScope.$apply(function() {
-          deferred.resolve(response.data.publish_actions==true);
-        });
-      });
-      return deferred.promise;
-    },
+    didGrantPermissions: didGrantPermissions,
     getUserInfo: function() {
       var _self = this;
-      FB.api('/me', function(response) {
-        $rootScope.$apply(function() { 
-          $rootScope.user = _self.user = response; 
+      var d = $q.defer();
+      FB.api('/me?fields=picture,name,link', function(response) {
+        FB.api('/me/friends', function(friendResponse) {
+          $rootScope.$apply(function() { 
+            $rootScope.user = _self.user = response;
+            $rootScope.friendCount = friendResponse.data.length;
+            d.resolve(_self.user);
+          });
         });
       });
+      return d.promise;
     }
   }
 });

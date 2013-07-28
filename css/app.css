@@ -53,6 +53,26 @@ ul {
   list-style-type: none;
 }
 
+#welcome-back {
+  padding-right: 25px;
+}
+
+#welcome-back, #welcome-back h2, #welcome-back h2 a {
+  font-family: 'museo-sans';
+  color: white;
+  font-size: 10pt;
+  line-height: 40px;
+}
+
+#welcome-back img {
+  height: 30px;
+  margin-top: -6px;
+}
+
+#dashboard {
+  min-height: 100%;
+}
+
 #dashboard h1 {
   font-family: 'league-gothic';
   font-size: 36pt;
@@ -60,7 +80,86 @@ ul {
 
 .experiment {
   padding: 10px;
+  font-family: 'museo-sans';
+  border-bottom: 1px solid rgba(200, 200, 200, 0.7);
 }
+
+.experiment p {
+  padding: 0;
+  margin: 0;
+}
+
+.experiment p b {
+  letter-spacing: -1px;
+}
+
+.experiment-title {
+  font-size: 24pt; 
+}
+
+.tests {
+  margin-left: 20px;
+  border-left: 12px solid rgba(200, 200, 200, 0.2);
+  padding-left: 10px;
+  width: 80%;
+}
+
+.test {
+  /*border-top: 1px solid rgba(200, 200, 200, 0.7);*/
+  margin-top: 15px;
+}
+.test:last-child {
+  margin-bottom: 15px;
+}
+
+.test-title {
+  display: inline-block;
+}
+
+.test * {
+  color: #222222;  
+}
+
+.test h3 {
+  font-size: 12pt;
+  font-family: 'museo-sans';
+  padding: 0;
+  margin: 0;
+}
+
+#add-experiment {
+  border-left: 1px solid rgba(200, 200, 200, 0.7);
+  min-height: 500px;
+  padding-top: 15px;
+  font-family: 'museo-sans';
+}
+
+#add-experiment textarea {
+  resize: vertical;
+}
+
+#add-experiment .sub-nav {
+   text-align: center; 
+}
+
+#add-experiment .sub-nav a {
+  color: #222;
+}
+
+#add-experiment h2 {
+  font-family: "league-gothic";
+  font-size: 20pt;
+}
+
+#add-experiment h2 span.icon-plus {
+  font-size: 16pt;
+}
+
+#post-new {
+  font-size: 20pt;
+  color: #222;
+}
+
 /* menu */
 .menu {
   list-style: none;
@@ -95,8 +194,21 @@ ul {
   visibility: hidden; 
 }
 
+.details-drop {
+  cursor: pointer;
+}
+
+.details-drop > b {
+  text-decoration: underline;
+}
+
 /* font faces */
 @font-face {
   font-family: 'league-gothic';
   src: url('/css/fonts/leaguegothic-regular-webfont.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'museo-sans';
+  src: url('/css/fonts/MuseoSans-100.otf') format('opentype');
 }

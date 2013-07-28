@@ -1,10 +1,14 @@
 <nav class="top-bar">
-  <ul class="title-area">
+  <ul class="left title-area">
     <li class="name">
       <h1>
-        <a href="#">A|B</a>
+        <a>A|B</a>
       </h1>
     </li>
+    <li class="divider"></li>
+  </ul>
+  <ul class="right">
+    <li id="welcome-back"><h2>Welcome back,&nbsp;&nbsp;<a href="{{me.link}}"><img src="{{me.picture.data.url}}"/>&nbsp;{{me.name}}</a></h2></li>
   </ul>
 </nav>
 
@@ -14,18 +18,23 @@
       No tests.
     </div>
     <div id="tests" ng-show="experiments">
-      <h1>Your Experiments</h1>
+      <h1><span class="icon-terminal"></span>&nbsp;Your Experiments</h1>
       <ul>
         <li ng-repeat="experiment in experiments">
           <div class="experiment">
-            Main testing experiment
-            <div class="test hide" ng-repeat="test in experiment">
-              <div class="panel">
-                <h3>{{test.message}}</h3>
-                <p class="time">
-                  {{test.updated_time | timeago}}
-                </p>
-                <p>{{test}}</p>
+            <p class="experiment-title">{{experiment.name}}</p>
+            <p><span class="icon-calendar"></span>&nbsp;<b>Created</b>: {{experiment.posts[0].updated_time | timeago}}</p>
+            <p><span class="icon-trophy"></span>&nbsp;<b>Current Winner</b>: {{experiment.posts[0].message}}</p>
+            <p class="details-drop" ng-click="experiment.shown = !experiment.shown"><span class="icon-list"></span>&nbsp;<b>Show/hide details</b></p>
+            <div class="tests">
+              <div class="test" ng-show="experiment.shown" ng-repeat="post in experiment.posts">
+                <h3>{{post.message}}</h3>
+                <p><b>Shared with:</b> {{post.friendCount}} friends</p>
+                <p><span class="icon-thumbs-up"/>&nbsp;{{prettyPrintNoun(post.numLikes, 'like')}} | <span class="icon-comments-alt"/>&nbsp;{{prettyPrintNoun(post.numComments, 'comment')}} | <span class="icon-share"/>&nbsp;{{prettyPrintNoun(post.numShares, 'share')}}</p>         
+                <p class="test-title"><span class="icon-globe"></span>&nbsp;<a href="{{'https://www.facebook.com/' + me.id + '/posts/' + post.id}}">Go to post</a></p>
+                <p class="select-winner"><span class="icon-globe"></span>&nbsp;<a ng-click="pickWinner(experiment.id,post.id)">Pick as Winner</a></p>
+                <p ng-show="false && getLastUserWhoLiked(post)"><span class="icon-comments-alt"></span>&nbsp;<b>Recent activity</b>: <b><a href="{{'http://www.facebook.com/' + getLastUserWhoLiked(post).id}}">{{getLastUserWhoLiked(post).name}}</a></b> liked this option</p>
+                <p class="hide">{{post}}</p>
               </div>
             </div>
           </div>
@@ -33,25 +42,51 @@
       </ul>
     </div>
   </div>
-  <div class="large-4 columns">
-    <div class="panel" ng-controller="createExperimentCtrl">
+  <div class="large-4 columns" id="add-experiment">
+    <div ng-controller="createExperimentCtrl">
+      <h2><span class="icon-plus"></span>&nbsp;Create New A|B Test</h2>
       <dl class="sub-nav">
-        <dt>Type:</dt>
-        <dd ng-class="{'active': type == 'STATUS'}"><a ng-click="changeType('STATUS')">Status</a></dd>
-        <dd ng-class="{'active': type == 'PHOTO'}"><a ng-click="changeType('PHOTO')">Photo</a></dd>
+        I want to make a...
+        <p><a ng-click="changeType('STATUS')"><b>Status</b></a> | <a ng-click="changeType('PHOTO')"><b>Photo</b></a></p>
       </dl>
+      <div ng-show="type != ''">
+        <p>Give your experiment a <b>name</b>.</p>
+        <input ng-model="postName" class="large" type="text" placeholder="Experiment Title"/>
+        <div style="margin-bottom: 20px; text-align: center">
+          <p>What percentage of your <del>guinea pigs</del> friends do you want to divide up?</p>
+          <input type="range"
+            ng-model="testGroupSize"
+            min="1"
+            max="100"
+            step="1"
+            value="50" /><br />
+          <label><span>{{testGroupSize}}%</span></label>
+        </div>
+      </div>
       <div ng-show="type == 'STATUS'">
         <ol>
-          <input ng-repeat="post in posts" ng-model="post.value" class="large" />
+          <textarea ng-repeat="post in posts" ng-model="post.value" class="large-4.columns" placeholder="Status {{$index + 1}}" />
         </ol>
       </div>
       <div ng-show="type == 'PHOTO'">
-        
+        <div ng-repeat="photo in photos">
+          <input type="file" ng-model-instant onchange="angular.element(this).scope().addFile(this,{{$index}})" />
+          <textarea ng-model="photo.value" class="large" placeholder="Photo Caption {{$index + 1}}" />
+        </div>
       </div>
-      
-      <img ng-show="posting" src="img/ajaxloader.gif" />
-      <a ng-click="addPost()" class="small button secondary">+ Add Bucket</a>
-      <a ng-click="createExperiment()" class="large button primary">Create Experiment</a>
+      <div style="text-align: center" ng-show="type != ''">
+        <a ng-click="removePost()" class="small button secondary post-edit" ng-class="{'disabled': canRemovePost()}">
+          - Remove Group
+        </a> 
+        <a ng-click="addPost()" class="small button secondary post-edit">
+          + Add Group
+        </a>
+      </div>
+      <div ng-show="type != ''" style="text-align: center; margin-bottom: 20px;">
+        <p><b>Final group size:</b> {{(friendCount*testGroupSize/100) / posts.length | number: 0}}</p>
+        <img ng-show="posting" src="img/ajaxloader.gif" /><br />
+        <a ng-click="createExperiment()" id="post-new" ng-class="{disabled: posting}"><span class="icon-beaker"></span>&nbsp;Start my experiment</a>
+      </div>
     </div>
   </div>
 </div>

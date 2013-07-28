@@ -36,9 +36,7 @@ angular.module('myApp.services')
     getExperimentPosts: function(fbid, experimentID) {
       var deferred = $q.defer();
       var user = rootRef.child('users').child(fbid).child('experiments').child(experimentID);
-      $rootScope.$apply(function() {
-        user.on('value', deferred.resolve);
-      });
+      user.on('value', deferred.resolve);
       return deferred.promise;
     },
     /**
@@ -58,8 +56,13 @@ angular.module('myApp.services')
       var user = rootRef.child('users').child(fbid);
       posts['type']=type;
       posts['testName']=name;
+      posts['timeCreated']=new Date().getTime();
       user.child('experiments').push(posts, deferred.resolve);
       return deferred.promise;
+    },
+    deleteExperiment: function(fbid, experimentID) {
+      var user = rootRef.child('users').child(fbid);
+      user.child('experiments').child(experimentID).remove();
     },
     /**
      * Takes a user's fbid and returns the experiments made by the user.

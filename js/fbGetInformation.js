@@ -4,12 +4,16 @@ angular.module('myApp.services')
     getExperimentInformation: function getExperimentInformation(experiment) {
       var type = experiment.type;
       var name = experiment.testName;
-      delete experiment.type;
-      delete experiment.testName;
+      var timeCreated = experiment.timeCreated;
       var deferred = $q.defer();
       var batchRequests = [];
+      var friendCounts = {};
       for(var postKey in experiment) {
         var post = experiment[postKey].postID;
+        if(!post) {
+          continue;
+        }
+        friendCounts[postKey] = experiment[postKey].friendList.length;
         if(type=='PHOTO') {
           batchRequests.push({
             method:'GET',
@@ -24,7 +28,7 @@ angular.module('myApp.services')
         }
       }
       FB.api('/','POST',{batch:batchRequests},function(responses) {
-        var results = [];
+        var resultArray = [];
         for(var i=0;i<responses.length;i++) {
           var result = JSON.parse(responses[i].body);
           if(result.likes) {
@@ -42,66 +46,18 @@ angular.module('myApp.services')
           } else {
             result.numShares = 0;
           }
-          results.push(result);
+          result.numActions = result.numShares + result.numComments + result.numLikes;
+          result.friendCount = friendCounts[i];
+          resultArray.push(result);
         }
+        
+        resultArray.sort(function(a,b) { return a.numActions < b.numActions });
+        var results = {result:resultArray,type:type,name:name,timeCreated:timeCreated};
         $rootScope.$apply(function() {
+          console.log(results);
           deferred.resolve(results);
         });
       });
-      return deferred.promise;   // Move fast and fuck everything
-    },
-    getExperimentsInformation: function getExperimentsInformation(limit) {
-      limit = limit || 20;
-      var deferred = $q.defer();
-      fBase.getExperiments($rootScope.user.id,limit).then(
-        function(experiments) {
-          var defers = [];
-          var batchRequests = [];
-          var postToExperiement = {};
-          for(var experimentKey in experiments) {
-            var experiment = experiments[experimentKey];
-            for(var postKey in experiment) {
-              var post = experiment[postKey].postID;
-              postToExperiement[post] = experimentKey;
-              console.log(post);
-              batchRequests.push({
-                method:'GET',
-                relative_url:post+'?fields=name,source,likes,comments,sharedposts'
-              });
-            }
-          }
-          FB.api('/','POST',{batch:batchRequests},function(responses) {
-            var results = {};
-            for(var i=0;i<responses.length;i++) {
-              var result = JSON.parse(responses[i].body);
-              if(result.likes) {
-                result.numLikes = result.likes.data.length;
-              } else {
-                result.numLikes = 0;
-              }
-              if(result.comments) {
-                result.numComments = result.comments.data.length;
-              } else {
-                result.numComments = 0;
-              }
-              if(result.shares) {
-                result.numShares = result.shares.data.length;
-              } else {
-                result.numShares = 0;
-              }
-              var experiment = postToExperiement[result.id];
-              if(results[experiment]) {
-                results[experiment].push(result);
-              } else {
-                results[experiment] = [result];
-              }
-            }
-            console.log(results);
-            console.log(deferred.resolve);
-            deferred.resolve(results);
-          });
-        }
-      );
       return deferred.promise;   // Move fast and fuck everything
     }
   }

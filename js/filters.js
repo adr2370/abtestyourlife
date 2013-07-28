@@ -8,6 +8,11 @@ angular.module('myApp.filters', []).
       return String(text).replace(/\%VERSION\%/mg, version);
     }
   }])
+.filter('reverse', function() {
+  return function(items) {
+    return items.slice().reverse();
+  };
+})
 .filter('timeago', function() {
   return function(input, p_allowFuture) {
     var substitute = function (stringOrFunction, number, strings) {
