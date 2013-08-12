@@ -61,7 +61,6 @@ angular.module('myApp.controllers', []).
     
     $scope.getLastUserWhoLiked = function (post) {
       if (post.likes && post.likes.data) {
-        console.log(post.likes);
         return post.likes.data[0].name; 
       }
       return '';

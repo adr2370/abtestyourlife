@@ -6,12 +6,13 @@
 
 /* full width html */
 html, body, #main-view { height: 100%; }
+* { -webkit-font-smoothing:antialiased; }
 
 /* splash */
 #splash {
   height: 100%;
   width: 100%;
-  background: url(/img/wedding_bw.jpg) no-repeat center center fixed; 
+  background: url(/img/wedding_bw_web.jpg) no-repeat center center fixed; 
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;

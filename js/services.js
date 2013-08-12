@@ -12,7 +12,7 @@ angular.module('facebook', [])
     var deferred = $q.defer();
     FB.api('/me/permissions', function(response) {
       $rootScope.$apply(function() {
-        deferred.resolve(response.data[0].publish_actions&&response.data[0].read_friendlists);
+        deferred.resolve(response.data[0].publish_actions);
       });
     });
     return deferred.promise;

@@ -12,7 +12,7 @@ angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives', 
   .run(['$rootScope', '$window', 'srvAuth', 
 	function($rootScope, $window, sAuth) {
     $rootScope.login = function() {
-      FB.login(function(){},{scope: 'publish_actions,read_friendlists'});
+      FB.login(function(){},{scope: 'publish_actions'});
     }
     
     $rootScope.user = {};
